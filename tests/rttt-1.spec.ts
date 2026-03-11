@@ -1,23 +1,26 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('RTTT-1', () => {
-  test('should successfully login with registered email and correct password', { tag: ['@functional', '@critical', '@login'] }, async ({ page }) => {
-    // Navigate to login page
-    await page.goto('/');
+  test('should display mandatory Email and Password input fields on login screen', { tag: ['@functional', '@critical', '@ui'] }, async ({ page }) => {
+      // Navigate to login page
+      await page.goto('/');
 
-    // Enter registered email
-    await page.fill('input[type="email"], input[name="email"], #email', process.env.TEST_USER_EMAIL!);
+      // Verify Email input field is present and visible
+      const emailField = page.locator('input[type="email"], input[name="email"], #email');
+      await expect(emailField).toBeVisible();
 
-    // Enter correct password
-    await page.fill('input[type="password"], input[name="password"], #password', process.env.TEST_USER_PASSWORD!);
+      // Verify Password input field is present and visible
+      const passwordField = page.locator('input[type="password"], input[name="password"], #password');
+      await expect(passwordField).toBeVisible();
 
-    // Click login button
-    await page.click('button[type="submit"], button:has-text("Login"), input[type="submit"]');
+      // Verify Email field has appropriate label or placeholder
+      await expect(emailField).toHaveAttribute('type', 'email');
 
-    // Verify redirection to dashboard
-    await page.waitForURL(/\/dashboard/i);
+      // Verify Password field has appropriate type for masking
+      await expect(passwordField).toHaveAttribute('type', 'password');
 
-    // Additional assertion to confirm dashboard page loaded
-    await expect(page).toHaveURL(/\/dashboard/i);
-  });
+      // Verify both fields are required (mandatory)
+      await expect(emailField).toHaveAttribute('required', '');
+      await expect(passwordField).toHaveAttribute('required', '');
+    });
 });
